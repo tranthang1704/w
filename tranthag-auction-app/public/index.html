@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>TranThag Auto Auction</title>
+<style>
+:root{--bg:#050a13;--card:#0b1322;--line:#18304f;--cyan:#22d3ee;--gold:#f59e0b;--green:#22c55e;--red:#ef4444;--muted:#94a3b8}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 25% 0,#0d2237 0,#050a13 42%);color:#e5edf7;font:14px Inter,Segoe UI,Arial,sans-serif}
+button,input,textarea{font:inherit}button{cursor:pointer}
+.shell{padding:18px;max-width:1500px;margin:auto}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:14px}
+.brand{font-weight:900;font-size:21px;letter-spacing:.04em}.brand b{color:var(--cyan)}.status{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{border:1px solid var(--line);border-radius:999px;padding:7px 10px;background:#08101c}.pill.ok{border-color:#14532d;color:#86efac}.pill.warn{border-color:#854d0e;color:#fde68a}
+.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}.card{background:linear-gradient(180deg,#0b1424,#08101c);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 18px 50px #0005}
+.hd{padding:12px 14px;border-bottom:1px solid var(--line);font-weight:800;display:flex;justify-content:space-between;align-items:center}.bd{padding:14px}
+.timer{font-size:76px;font-weight:1000;line-height:1;text-align:center;letter-spacing:-.05em;margin:10px 0}.phase{text-align:center;color:var(--cyan);font-weight:900;letter-spacing:.18em}
+.controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.btn{border:1px solid #274766;background:#102038;color:white;padding:9px 13px;border-radius:9px;font-weight:800}.btn.green{background:#12351f;border-color:#1f6b38}.btn.red{background:#3a171b;border-color:#7f1d1d}.btn.cyan{background:#082f49;border-color:#0e7490}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.list{max-height:340px;overflow:auto}.row{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #132238}.avatar{width:40px;height:40px;border-radius:50%;background:#172033;object-fit:cover}.name{font-weight:800}.sub{font-size:12px;color:var(--muted)}.coins{font-size:18px;font-weight:900;color:#fbbf24}
+input,textarea{width:100%;border:1px solid #203b5d;background:#07101c;color:white;padding:8px;border-radius:8px;outline:none}textarea{min-height:76px;resize:vertical}
+.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.form .full{grid-column:1/-1}label{display:block;color:#9fb1c7;font-size:12px;font-weight:700;margin-bottom:5px}
+.maprow{display:grid;grid-template-columns:1fr 1fr 2fr auto;gap:7px;margin-bottom:7px}.maphead{color:#64748b;font-size:11px;text-transform:uppercase}.log{font-family:ui-monospace,Consolas,monospace;font-size:12px;max-height:180px;overflow:auto;background:#050910;border:1px solid #14253b;border-radius:9px;padding:8px}
+.winner{padding:12px;border:1px solid #5d4a13;background:#241c08;border-radius:10px;margin:10px 0}.winner strong{color:#fde68a}
+@media(max-width:1000px){.grid,.split{grid-template-columns:1fr}.maprow{grid-template-columns:1fr}.timer{font-size:58px}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="top">
+    <div class="brand">TRANTHAG <b>TIKTOK LIVE AUTO AUCTION</b></div>
+    <div class="status">
+      <span id="conn" class="pill">TikTok: disconnected</span>
+      <span id="viewers" class="pill">0 viewers</span>
+      <span id="delivery" class="pill">Delivery: idle</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <div class="card">
+        <div class="hd"><span>AUCTION BOARD</span><span id="round">ROUND #0</span></div>
+        <div class="bd">
+          <div id="phase" class="phase">IDLE</div>
+          <div id="timer" class="timer">00:50</div>
+          <div class="controls">
+            <button id="start" class="btn green">START ROUND</button>
+            <button id="stop" class="btn red">STOP</button>
+          </div>
+          <div id="winner" class="winner" style="display:none"></div>
+        </div>
+      </div>
+
+      <div class="split">
+        <div class="card">
+          <div class="hd">TOP BIDDERS <span id="bidCount">0</span></div>
+          <div id="bidders" class="bd list"><div class="sub">Chưa có bidder.</div></div>
+        </div>
+        <div class="card">
+          <div class="hd">REAL GIFT FEED</div>
+          <div id="gifts" class="bd list"><div class="sub">Đang chờ gift thật.</div></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="hd">EVENT LOG</div>
+        <div class="bd"><div id="log" class="log"></div></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="hd">TIKTOK LIVE</div>
+        <div class="bd">
+          <div class="form">
+            <div class="full"><label>TikTok LIVE username</label><input id="streamer" placeholder="username"/></div>
+            <div><button id="connect" class="btn cyan" style="width:100%">CONNECT</button></div>
+            <div><button id="disconnect" class="btn" style="width:100%">DISCONNECT</button></div>
+          </div>
+          <p class="sub">Gift được lấy trực tiếp từ TikTok LIVE connector. Tool không tự tạo bid.</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="hd">AUCTION SETTINGS</div>
+        <div class="bd">
+          <div class="form">
+            <div><label>Main (s)</label><input id="mainSeconds" type="number"/></div>
+            <div><label>Final delay (s)</label><input id="finalSeconds" type="number"/></div>
+            <div><label>Gift threshold</label><input id="highGiftThreshold" type="number"/></div>
+            <div><label>Overtime reset (s)</label><input id="overtimeSeconds" type="number"/></div>
+            <div><label>Next round delay</label><input id="nextRoundDelay" type="number"/></div>
+            <div><label>Coin reward</label><input id="coinReward" type="number"/></div>
+            <div><label>Item ID</label><input id="itemId"/></div>
+            <div><label>Item name</label><input id="itemName"/></div>
+            <div class="full"><label>Award API URL</label><input id="awardApiUrl"/></div>
+            <div class="full"><label>Default delivery comment</label><input id="deliveryMessage"/></div>
+            <div class="full"><label><input id="autoStartNextRound" type="checkbox" style="width:auto"/> Auto start next round</label></div>
+            <div class="full"><label><input id="autoDelivery" type="checkbox" style="width:auto"/> Auto Roblox delivery</label></div>
+            <div class="full"><label><input id="autoStatusComment" type="checkbox" style="width:auto"/> Auto status comment from authorized connected account</label></div>
+          </div>
+          <button id="save" class="btn green" style="width:100%;margin-top:10px">SAVE SETTINGS</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="hd"><span>WINNER ACCOUNTS → ROBLOX</span><button id="addMap" class="btn">+ ADD</button></div>
+        <div class="bd">
+          <div class="maprow maphead"><div>TikTok</div><div>Roblox</div><div>Message</div><div></div></div>
+          <div id="maps"></div>
+          <p class="sub">Biến: {winner}, {roblox}, {item}, {coins}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket=io();
+let current=null, editing=false;
+const $=id=>document.getElementById(id);
+const fmt=n=>String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function addLog(t){const d=document.createElement('div');d.textContent=new Date().toLocaleTimeString()+'  '+t;$('log').prepend(d)}
+function renderMaps(maps){
+  const root=$('maps');root.innerHTML='';
+  (maps||[]).forEach((m,i)=>{
+    const r=document.createElement('div');r.className='maprow';r.dataset.i=i;
+    r.innerHTML='<input class="mt" placeholder="@tiktok" value="'+esc(m.tiktok)+'"><input class="mr" placeholder="RobloxName" value="'+esc(m.roblox)+'"><input class="mm" placeholder="received {item}, tysm" value="'+esc(m.message||'')+'"><button class="btn red mx">×</button>';
+    r.querySelector('.mx').onclick=()=>{r.remove()};
+    root.appendChild(r);
+  });
+}
+function collectMaps(){return [...document.querySelectorAll('#maps .maprow')].map(r=>({tiktok:r.querySelector('.mt').value,roblox:r.querySelector('.mr').value,message:r.querySelector('.mm').value})).filter(x=>x.tiktok&&x.roblox)}
+function putConfig(c){
+  if(editing)return;
+  ['streamerUsername','mainSeconds','finalSeconds','highGiftThreshold','overtimeSeconds','nextRoundDelay','coinReward','itemId','itemName','awardApiUrl','deliveryMessage'].forEach(k=>{
+    const id=k==='streamerUsername'?'streamer':k; if($(id))$(id).value=c[k]??'';
+  });
+  ['autoStartNextRound','autoDelivery','autoStatusComment'].forEach(k=>$(k).checked=!!c[k]);
+  renderMaps(c.winnerMappings||[]);
+}
+function render(s){
+  current=s;
+  $('phase').textContent=String(s.phase||'idle').toUpperCase();
+  $('timer').textContent=fmt(Number(s.timeRemaining||0));
+  $('round').textContent='ROUND #'+(s.roundId||0);
+  $('conn').textContent='TikTok: '+(s.connection?.status||'disconnected')+(s.connection?.username?' @'+s.connection.username:'');
+  $('conn').className='pill '+(s.connection?.status==='connected'?'ok':'');
+  $('viewers').textContent=(s.viewerCount||0)+' viewers';
+  $('delivery').textContent='Delivery: '+(s.delivery?.status||'idle');
+  $('delivery').className='pill '+(s.delivery?.status==='delivered'?'ok':s.delivery?.status==='error'?'warn':'');
+  const bs=s.biddersList||[];$('bidCount').textContent=bs.length;
+  $('bidders').innerHTML=bs.length?bs.map((b,i)=>'<div class="row"><img class="avatar" src="'+esc(b.profilePictureUrl||'')+'" onerror="this.style.visibility=\'hidden\'"><div><div class="name">#'+(i+1)+' @'+esc(b.uniqueId)+'</div><div class="sub">'+esc(b.nickname||'')+'</div></div><div class="coins">'+Number(b.coins||0).toLocaleString()+'</div></div>').join(''):'<div class="sub">Chưa có bidder.</div>';
+  const gs=s.recentGifts||[];
+  $('gifts').innerHTML=gs.length?gs.map(g=>'<div class="row"><div class="avatar" style="display:grid;place-items:center">🎁</div><div><div class="name">@'+esc(g.uniqueId)+'</div><div class="sub">'+esc(g.giftName)+'</div></div><div class="coins">+'+Number(g.coins||0).toLocaleString()+'</div></div>').join(''):'<div class="sub">Đang chờ gift thật.</div>';
+  if(s.winner){$('winner').style.display='block';$('winner').innerHTML='<strong>WINNER @'+esc(s.winner.uniqueId)+'</strong> — '+Number(s.winner.coins||0).toLocaleString()+' real coins';}else $('winner').style.display='none';
+  putConfig(s.config||{});
+}
+socket.on('state',render);socket.on('log',x=>addLog(x.text));socket.on('connect',()=>socket.emit('get_state'));
+$('start').onclick=()=>socket.emit('start_round');$('stop').onclick=()=>socket.emit('stop_round');
+$('connect').onclick=()=>socket.emit('connect_tiktok',{username:$('streamer').value});$('disconnect').onclick=()=>socket.emit('disconnect_tiktok');
+$('addMap').onclick=()=>{editing=true;const m=current?.config?.winnerMappings||[];renderMaps([...collectMaps(),{tiktok:'',roblox:'',message:''}])};
+$('save').onclick=()=>{
+  const payload={streamerUsername:$('streamer').value,winnerMappings:collectMaps()};
+  ['mainSeconds','finalSeconds','highGiftThreshold','overtimeSeconds','nextRoundDelay','coinReward'].forEach(k=>payload[k]=Number($(k).value));
+  ['itemId','itemName','awardApiUrl','deliveryMessage'].forEach(k=>payload[k]=$(k).value);
+  ['autoStartNextRound','autoDelivery','autoStatusComment'].forEach(k=>payload[k]=$(k).checked);
+  editing=false;socket.emit('update_config',payload);
+};
+document.addEventListener('focusin',e=>{if(e.target.matches('input,textarea'))editing=true});
+document.addEventListener('focusout',()=>setTimeout(()=>editing=false,100));
+</script>
+</body></html>
