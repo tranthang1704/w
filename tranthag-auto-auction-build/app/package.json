@@ -1,0 +1,41 @@
+{
+  "name": "tranthag-auto-auction",
+  "version": "1.0.0",
+  "description": "TranThag TikTok LIVE Auto Auction",
+  "main": "main.js",
+  "author": "TranThag",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win portable"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1",
+    "tiktok-live-connector": "2.3.0-beta1"
+  },
+  "devDependencies": {
+    "electron": "^39.0.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.tranthag.autoauction",
+    "productName": "TranThag Auto Auction",
+    "asar": true,
+    "files": [
+      "main.js",
+      "server.js",
+      "public/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "artifactName": "TranThag_Auto_Auction_1.0.0_Portable.exe"
+    }
+  }
+}
