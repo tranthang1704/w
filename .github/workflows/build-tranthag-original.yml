@@ -1,0 +1,73 @@
+name: Build Original TranThag Patched EXE
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'tranthag-original-patch/**'
+      - '.github/workflows/build-tranthag-original.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout patch source
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Download original ASAR from Google Drive
+        shell: pwsh
+        run: |
+          $id = "1E7CaCVXivkb2IZTX-AbAc0XD4nSue7sL"
+          $url = "https://drive.usercontent.google.com/download?id=$id&export=download&confirm=t"
+          Invoke-WebRequest -Uri $url -OutFile "original.asar"
+          if ((Get-Item "original.asar").Length -lt 50000000) {
+            throw "Google Drive download is too small; original ASAR was not retrieved."
+          }
+
+      - name: Extract original app
+        shell: pwsh
+        run: |
+          npx -y @electron/asar extract original.asar original-app
+          if (!(Test-Path "original-app/server.js")) { throw "server.js missing after ASAR extract" }
+          if (!(Test-Path "original-app/public/dashboard.js")) { throw "dashboard.js missing after ASAR extract" }
+
+      - name: Patch original features in place
+        run: node tranthag-original-patch/patch-original.js original-app
+
+      - name: Prepare package for EXE
+        run: node tranthag-original-patch/prepare-package.js original-app/package.json
+
+      - name: Install build dependencies
+        working-directory: original-app
+        run: npm install
+
+      - name: Build portable EXE
+        working-directory: original-app
+        run: npm run dist
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - name: Verify EXE
+        shell: pwsh
+        run: |
+          Get-ChildItem original-app/dist -Recurse
+          if (!(Test-Path "original-app/dist/TranThagAPPLIVE_AutoAuction_FULL.exe")) {
+            throw "Final EXE not found"
+          }
+
+      - name: Upload patched full EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: TranThagAPPLIVE_AutoAuction_FULL
+          path: original-app/dist/TranThagAPPLIVE_AutoAuction_FULL.exe
+          if-no-files-found: error
+          retention-days: 30
