@@ -26,11 +26,11 @@ jobs:
       - name: Download original ASAR from Google Drive
         shell: pwsh
         run: |
-          $id = "1E7CaCVXivkb2IZTX-AbAc0XD4nSue7sL"
-          $url = "https://drive.usercontent.google.com/download?id=$id&export=download&confirm=t"
-          Invoke-WebRequest -Uri $url -OutFile "original.asar"
+          python -m pip install --disable-pip-version-check gdown
+          python -m gdown --fuzzy "https://drive.google.com/file/d/1E7CaCVXivkb2IZTX-AbAc0XD4nSue7sL/view?usp=drivesdk" -O original.asar
+          Write-Host ("Downloaded bytes: " + (Get-Item "original.asar").Length)
           if ((Get-Item "original.asar").Length -lt 50000000) {
-            throw "Google Drive download is too small; original ASAR was not retrieved."
+            throw "Original ASAR download is too small."
           }
 
       - name: Extract original app
