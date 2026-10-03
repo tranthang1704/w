@@ -1,0 +1,47 @@
+{
+  "name": "tiktok-live-auction",
+  "version": "2.5.16-local-auto-auction",
+  "description": "TikTok Live Auction Overlay and Dashboard - local auto auction build",
+  "main": "main.js",
+  "author": "ANBEOONTOP",
+  "license": "ISC",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable --x64"
+  },
+  "dependencies": {
+    "electron-log": "^5.4.4",
+    "electron-updater": "^6.8.3",
+    "express": "^4.19.2",
+    "rcedit": "^5.0.2",
+    "socket.io": "^4.7.5",
+    "tiktok-live-connector": "2.3.0-beta1"
+  },
+  "devDependencies": {
+    "electron": "^38.0.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.tranthag.applive.autoauction",
+    "productName": "TranThagAPPLIVE Auto Auction FULL",
+    "asar": true,
+    "files": [
+      "main.js",
+      "server.js",
+      "anbeo-animation-client.js",
+      "public/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "TranThagAPPLIVE_AutoAuction_FULL.exe"
+    }
+  }
+}
