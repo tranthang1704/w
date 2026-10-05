@@ -86,6 +86,9 @@ function autoSaveJson(file, value) {
 let autoAuctionSettings = autoSanitizeSettings(autoLoadJson(AUTO_AUCTION_SETTINGS_FILE, AUTO_AUCTION_DEFAULTS));
 let autoAwardHistory = new Set(autoLoadJson(AUTO_AWARD_HISTORY_FILE, []));
 let autoNextRoundTimer = null;
+let autoCurrentRoundId = '';
+function autoNewRoundId() { return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10); }
+function autoEnsureRoundId() { if (!autoCurrentRoundId) autoCurrentRoundId = autoNewRoundId(); return autoCurrentRoundId; }
 function autoPublicSettings() {
   return JSON.parse(JSON.stringify(autoAuctionSettings));
 }
@@ -126,7 +129,7 @@ async function autoDeliverWinner(winner) {
     autoEmitStatus('error', 'Award API URL is empty');
     return false;
   }
-  const awardId = 'auction-' + auctionRoundGeneration + '-' + autoCleanTikTok(winner.uniqueId) + '-' + autoAuctionSettings.itemId;
+  const awardId = 'auction-' + autoEnsureRoundId() + '-' + autoCleanTikTok(winner.uniqueId) + '-' + autoAuctionSettings.itemId;
   if (autoAwardHistory.has(awardId)) {
     autoEmitStatus('delivered', 'Already delivered: ' + awardId);
     return true;
@@ -171,6 +174,7 @@ async function autoDeliverWinner(winner) {
 }
 function autoStartFreshRound() {
   if (!autoAuctionSettings.enabled) return;
+  autoCurrentRoundId = autoNewRoundId();
   resetAuction();
   autoApplyAuctionTiming();
   auctionState.timeRemaining = auctionState.config.initialTime;
