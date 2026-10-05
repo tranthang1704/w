@@ -23,11 +23,11 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Download original ASAR from Google Drive
+      - name: Download original ASAR
         shell: pwsh
         run: |
-          python -m pip install --disable-pip-version-check gdown
-          python -m gdown --fuzzy "https://drive.google.com/file/d/1E7CaCVXivkb2IZTX-AbAc0XD4nSue7sL/view?usp=drivesdk" -O original.asar
+          $url = "https://tranthag-auto-auction-test.floot.app/_cdn/static/TranThagAPPLIVE_Animation_Fixed.asar"
+          Invoke-WebRequest -Uri $url -OutFile "original.asar"
           Write-Host ("Downloaded bytes: " + (Get-Item "original.asar").Length)
           if ((Get-Item "original.asar").Length -lt 50000000) {
             throw "Original ASAR download is too small."
