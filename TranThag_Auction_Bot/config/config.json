@@ -7,6 +7,16 @@
     "minGiftCoins":100,
     "startOnTikTokConnect":true
   },
+  "simulation":{
+    "enabled":false,
+    "dummyBidder":{
+      "enabled":false,
+      "followTestBids":true,
+      "autoNoBidAtSecondsLeft":10,
+      "pushStepCoins":100,
+      "usernames":["DUMMY_RCKZ","DUMMY_ANBEO"]
+    }
+  },
   "roblox":{
     "topic":"auction-awards-v1",
     "maxAttempts":3,
