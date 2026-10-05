@@ -52,6 +52,9 @@ jobs:
       - name: Add TranThag Local API
         run: node tranthag-original-patch/add-tranthag-local-api.js original-app
 
+      - name: Link TikTok Studio to auto auction board
+        run: node tranthag-original-patch/add-studio-auction-link.js original-app
+
       - name: Prepare package for EXE
         run: node tranthag-original-patch/prepare-package.js original-app/package.json
 
