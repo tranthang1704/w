@@ -30,6 +30,7 @@ export const config = {
   tiktokUsername: process.env.TIKTOK_USERNAME || "",
   adminToken: process.env.ADMIN_TOKEN || "",
   allowTestApi: bool("ALLOW_TEST_API",false),
+
   auction: {
     ...base.auction,
     minGiftCoins: num("MIN_GIFT_COINS",base.auction.minGiftCoins),
@@ -38,6 +39,24 @@ export const config = {
     finalResetSeconds: num("FINAL_RESET_SECONDS",base.auction.finalResetSeconds),
     nextRoundDelaySeconds: num("NEXT_ROUND_DELAY_SECONDS",base.auction.nextRoundDelaySeconds)
   },
+
+  simulation: {
+    enabled: bool("SIMULATION_MODE",base.simulation?.enabled ?? false),
+    dummyBidder: {
+      ...(base.simulation?.dummyBidder || {}),
+      enabled: bool("DUMMY_BIDDER_ENABLED",base.simulation?.dummyBidder?.enabled ?? false),
+      followTestBids: bool("DUMMY_FOLLOW_TEST_BIDS",base.simulation?.dummyBidder?.followTestBids ?? true),
+      autoNoBidAtSecondsLeft: num(
+        "DUMMY_AUTO_NO_BID_SECONDS_LEFT",
+        base.simulation?.dummyBidder?.autoNoBidAtSecondsLeft ?? 10
+      ),
+      pushStepCoins: num(
+        "DUMMY_PUSH_STEP_COINS",
+        base.simulation?.dummyBidder?.pushStepCoins ?? 100
+      )
+    }
+  },
+
   roblox: {
     ...base.roblox,
     enabled: bool("ROBLOX_DELIVERY_ENABLED",false),
@@ -46,5 +65,6 @@ export const config = {
     apiKey: process.env.ROBLOX_OPEN_CLOUD_API_KEY || "",
     topic: process.env.ROBLOX_TOPIC || base.roblox.topic
   },
+
   awards: readJson("config/auction-awards-v1.json")
 };
