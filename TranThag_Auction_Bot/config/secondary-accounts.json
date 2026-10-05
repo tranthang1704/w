@@ -1,0 +1,8 @@
+{
+  "schema":"secondary-accounts-v1",
+  "mode":"test-only",
+  "accounts":[
+    {"label":"acc-phu-01","tiktokUsername":"replace_me","enabled":false}
+  ],
+  "note":"Do not store passwords or session cookies here."
+}
