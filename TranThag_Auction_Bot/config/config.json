@@ -1,0 +1,35 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 3000,
+    "legacyPublicDir": "./legacy-public",
+    "fallbackPublicDir": "./fallback-public",
+    "legacyWsEnabled": true,
+    "legacyWsPath": "/"
+  },
+  "auction": {
+    "mainSeconds": 50,
+    "finalSeconds": 25,
+    "finalResetSeconds": 30,
+    "nextRoundDelaySeconds": 5,
+    "minGiftCoins": 100,
+    "startOnTikTokConnect": true,
+    "restartRoundOnReconnect": true,
+    "resetFinalOnQualifyingGift": true
+  },
+  "tiktok": {
+    "username": "",
+    "autoReconnect": true,
+    "reconnectBaseMs": 2000,
+    "reconnectMaxMs": 30000,
+    "enableExtendedGiftInfo": true
+  },
+  "roblox": {
+    "enabled": false,
+    "dryRun": true,
+    "universeId": "",
+    "topic": "auction-awards-v1",
+    "requestTimeoutMs": 10000,
+    "maxAttempts": 3
+  }
+}
