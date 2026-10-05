@@ -327,6 +327,18 @@ d += String.raw`
       '<label>Item ID<input id="ttaItemId"></label>'+
       '<label>Item name<input id="ttaItemName"></label></div>'+
       '<label style="display:block;margin-top:8px">Roblox award endpoint<input id="ttaAwardUrl"></label>'+
+      '<div style="margin-top:12px;padding:10px;border:1px solid #155e75;border-radius:8px;background:rgba(8,47,73,.35)">'+
+      '<div style="font-weight:800;color:#67e8f9;margin-bottom:6px">TIKTOK LIVE / BROWSER SOURCE</div>'+
+      '<div style="font-size:11px;color:#94a3b8;margin-bottom:7px">Copy this authenticated link into TikTok LIVE Studio / OBS Browser Source. It stays synced with the auction inside this app.</div>'+
+      '<div style="display:grid;grid-template-columns:1fr auto auto;gap:6px">'+
+      '<input id="ttaWidgetUrl" readonly placeholder="Preparing widget link...">'+
+      '<button type="button" id="ttaCopyWidget" class="btn-secondary">COPY LINK</button>'+
+      '<button type="button" id="ttaPreviewWidget" class="btn-secondary">PREVIEW</button></div>'+
+      '<div style="display:grid;grid-template-columns:1fr auto;gap:6px;margin-top:7px">'+
+      '<select id="ttaTikTokAccount"><option value="">Select TikTok account...</option></select>'+
+      '<button type="button" id="ttaConnectTikTok" class="btn-primary">CONNECT TIKTOK LIVE</button></div>'+
+      '<div id="ttaTikTokState" style="font-size:11px;color:#94a3b8;margin-top:6px">TikTok: waiting...</div>'+
+      '</div>'+
       '<label style="display:block;margin-top:8px">Factual delivery status comment<input id="ttaDefaultMessage" placeholder="@{winner} received {item}, tysm"></label>'+
       '<div style="display:flex;gap:14px;flex-wrap:wrap;margin:10px 0">'+
       '<label><input id="ttaEnabled" type="checkbox"> Automation enabled</label>'+
@@ -349,6 +361,56 @@ d += String.raw`
       w.innerHTML = rows([{tiktok:'',roblox:'',message:''}]);
       root.appendChild(w.firstElementChild);
     };
+    async function refreshTtaWidgetLink() {
+      const input = document.getElementById('ttaWidgetUrl');
+      if (!input) return;
+      try {
+        if (typeof loadWidgetAuth === 'function') await loadWidgetAuth();
+        const url = typeof buildWidgetUrl === 'function' ? buildWidgetUrl('widget.html') : '';
+        input.value = url || (window.location.origin + '/widget.html');
+      } catch (_) {
+        input.value = window.location.origin + '/widget.html';
+      }
+    }
+    function refreshTtaAccounts(list) {
+      const select = document.getElementById('ttaTikTokAccount');
+      if (!select) return;
+      const prev = select.value;
+      const accounts = Array.isArray(list) ? list : [];
+      select.innerHTML = '<option value="">Select TikTok account...</option>' + accounts.map(x => {
+        const v = String(x || '').replace(/^@/, '');
+        return '<option value="'+esc(v)+'">@'+esc(v)+'</option>';
+      }).join('');
+      if (accounts.includes(prev)) select.value = prev;
+    }
+    document.getElementById('ttaCopyWidget').onclick = async () => {
+      await refreshTtaWidgetLink();
+      const url = document.getElementById('ttaWidgetUrl').value;
+      if (!url) return;
+      try { await navigator.clipboard.writeText(url); } catch (_) {}
+      const btn = document.getElementById('ttaCopyWidget');
+      btn.textContent = 'COPIED';
+      setTimeout(() => { btn.textContent = 'COPY LINK'; }, 1500);
+    };
+    document.getElementById('ttaPreviewWidget').onclick = async () => {
+      await refreshTtaWidgetLink();
+      const url = document.getElementById('ttaWidgetUrl').value;
+      if (url) window.open(url, '_blank', 'width=500,height=850');
+    };
+    document.getElementById('ttaConnectTikTok').onclick = () => {
+      const select = document.getElementById('ttaTikTokAccount');
+      const username = String(select && select.value || '').trim();
+      if (!username) {
+        document.getElementById('ttaTikTokState').textContent = 'TikTok: choose an account first';
+        return;
+      }
+      socket.emit('connect_tiktok', { username });
+      document.getElementById('ttaTikTokState').textContent = 'TikTok: connecting @' + username + '...';
+    };
+    if (typeof socket !== 'undefined') {
+      socket.emit('request_accounts_list');
+    }
+    refreshTtaWidgetLink();
     document.getElementById('ttaSave').onclick = () => {
       const mappings = [...document.querySelectorAll('#ttaMaps .tta-map')].map(r => ({
         tiktok: r.querySelector('.tta-tiktok').value,
@@ -405,6 +467,35 @@ d += String.raw`
     socket.on('auto_auction_round_started', x => {
       mount();
       document.getElementById('ttaStatus').textContent = 'new round '+x.timeRemaining+'s';
+    });
+    socket.on('allowed_accounts_list', list => {
+      mount();
+      const select = document.getElementById('ttaTikTokAccount');
+      if (select) {
+        const prev = select.value;
+        const accounts = Array.isArray(list) ? list : [];
+        select.innerHTML = '<option value="">Select TikTok account...</option>' + accounts.map(x => {
+          const v = String(x || '').replace(/^@/, '');
+          return '<option value="'+esc(v)+'">@'+esc(v)+'</option>';
+        }).join('');
+        if (accounts.includes(prev)) select.value = prev;
+      }
+    });
+    socket.on('state_update', state => {
+      const el = document.getElementById('ttaTikTokState');
+      if (!el || !state || !state.connection) return;
+      const status = state.connection.status || 'disconnected';
+      const user = state.connection.username ? ' @'+String(state.connection.username).replace(/^@/,'') : '';
+      el.textContent = 'TikTok: ' + status + user;
+    });
+    socket.on('connect', () => {
+      if (typeof loadWidgetAuth === 'function') {
+        loadWidgetAuth().then(() => {
+          const input = document.getElementById('ttaWidgetUrl');
+          if (input && typeof buildWidgetUrl === 'function') input.value = buildWidgetUrl('widget.html') || (window.location.origin + '/widget.html');
+        }).catch(() => {});
+      }
+      socket.emit('request_accounts_list');
     });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
