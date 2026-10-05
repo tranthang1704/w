@@ -502,6 +502,7 @@ d += String.raw`
   else setTimeout(mount, 0);
 })();
 `;
+}
 fs.writeFileSync(dashPath, d, 'utf8');
 
 console.log('Patched original TranThag app without replacing its existing dashboard/features.');
