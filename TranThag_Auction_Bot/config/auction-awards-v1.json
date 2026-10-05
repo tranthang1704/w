@@ -1,0 +1,13 @@
+{
+  "schema":"auction-awards-v1",
+  "activeAwardId":"test-item-001",
+  "awards":[
+    {
+      "id":"test-item-001",
+      "displayName":"Test Auction Item",
+      "catalogKey":"TEST_ITEM_001",
+      "quantity":1,
+      "enabled":true
+    }
+  ]
+}
