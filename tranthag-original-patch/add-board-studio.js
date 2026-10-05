@@ -21,10 +21,11 @@ s=rep(s,
 'server boardCustomCss default');
 
 // Add custom CSS to dashboard config payload.
-d=rep(d,
-"    config.panelColor = strVal('inputPanelColor', 'default');\n  }",
-"    config.panelColor = strVal('inputPanelColor', 'default');\n    config.boardCustomCss = strVal('inputBoardCustomCss', '').slice(0, 30000);\n  }",
-'dashboard save css');
+if (!d.includes("config.boardCustomCss = strVal('inputBoardCustomCss'")) {
+  const panelLine = "    config.panelColor = strVal('inputPanelColor', 'default');";
+  if (!d.includes(panelLine)) throw new Error('Missing anchor dashboard save css');
+  d = d.replace(panelLine, panelLine + "\n    config.boardCustomCss = strVal('inputBoardCustomCss', '').slice(0, 30000);");
+}
 
 // Sync textarea from state.
 d=rep(d,
