@@ -1,0 +1,15 @@
+{
+  "schema": "secondary-accounts-v1",
+  "mode": "test-only",
+  "accounts": [
+    {
+      "label": "test-secondary-01",
+      "tiktokUsername": "replace_me",
+      "enabled": false
+    }
+  ],
+  "notes": [
+    "Do not store passwords, session cookies, .ROBLOSECURITY, or TikTok credentials here.",
+    "Secondary accounts are test-only and are not injected as fake live bidders."
+  ]
+}
