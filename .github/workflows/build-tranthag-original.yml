@@ -49,6 +49,9 @@ jobs:
       - name: Add live real-gift feed
         run: node tranthag-original-patch/add-live-gift-feed.js original-app
 
+      - name: Add TranThag Local API
+        run: node tranthag-original-patch/add-tranthag-local-api.js original-app
+
       - name: Prepare package for EXE
         run: node tranthag-original-patch/prepare-package.js original-app/package.json
 
