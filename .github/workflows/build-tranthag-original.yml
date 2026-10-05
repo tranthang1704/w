@@ -46,6 +46,9 @@ jobs:
       - name: Add unified board studio
         run: node tranthag-original-patch/add-board-studio.js original-app
 
+      - name: Add live real-gift feed
+        run: node tranthag-original-patch/add-live-gift-feed.js original-app
+
       - name: Prepare package for EXE
         run: node tranthag-original-patch/prepare-package.js original-app/package.json
 
