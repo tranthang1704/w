@@ -47,7 +47,10 @@ if(!h.includes('id="allBoardStudio"')) h=rep(h,anchor,panel+anchor,'all board st
 // Dashboard bindings.
 const bindAnchor="// -------------------------------------------------------------\n// Board Template Custom Background";
 const bindCode=`// ALL BOARD STUDIO\n(function(){\n  function selectBoard(board){\n    const sel=document.getElementById('selectBoardTemplate');\n    if(!sel) return;\n    sel.value=board;\n    sel.dispatchEvent(new Event('change',{bubbles:true}));\n    if(typeof sendConfigUpdate==='function') sendConfigUpdate();\n    const custom=document.getElementById('customBoardDesigner');\n    if(custom) custom.classList.remove('hidden');\n    const rckz=document.getElementById('rckzCustomizerBox');\n    if(rckz) rckz.style.display=board==='rckz'?'':'none';\n  }\n  document.querySelectorAll('#boardStudioButtons [data-board]').forEach(btn=>btn.addEventListener('click',()=>selectBoard(btn.dataset.board)));\n  const apply=document.getElementById('btnApplyBoardCustomCss');\n  if(apply) apply.addEventListener('click',()=>{ if(typeof sendConfigUpdate==='function') sendConfigUpdate(); });\n  const reset=document.getElementById('btnResetBoardCustomCss');\n  if(reset) reset.addEventListener('click',()=>{ const el=document.getElementById('inputBoardCustomCss'); if(el) el.value=''; if(typeof sendConfigUpdate==='function') sendConfigUpdate(); });\n  const preview=document.getElementById('btnBoardStudioPreview');\n  if(preview) preview.addEventListener('click',()=>{\n    const frame=document.getElementById('previewIframe');\n    if(!frame) return;\n    frame.src='/widget.html?preview=1&_='+Date.now();\n    const custom=document.getElementById('customBoardDesigner');\n    if(custom) custom.classList.remove('hidden');\n  });\n})();\n\n`;
-if(!d.includes('// ALL BOARD STUDIO')) d=rep(d,bindAnchor,bindCode+bindAnchor,'board studio bindings');
+if(!d.includes('// ALL BOARD STUDIO')) {
+  if (d.includes(bindAnchor)) d = d.replace(bindAnchor, bindCode + bindAnchor);
+  else d += "\n\n" + bindCode;
+}
 
 // Apply config CSS to the main widget and same-origin independent board iframes.
 const widgetAnchor="// UI Elements\nconst widgetTitle";
