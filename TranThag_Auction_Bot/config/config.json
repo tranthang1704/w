@@ -1,0 +1,15 @@
+{
+  "auction":{
+    "mainSeconds":50,
+    "finalSeconds":25,
+    "finalResetSeconds":30,
+    "nextRoundDelaySeconds":5,
+    "minGiftCoins":100,
+    "startOnTikTokConnect":true
+  },
+  "roblox":{
+    "topic":"auction-awards-v1",
+    "maxAttempts":3,
+    "requestTimeoutMs":10000
+  }
+}
