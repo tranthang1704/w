@@ -43,6 +43,9 @@ jobs:
       - name: Patch original features in place
         run: node tranthag-original-patch/patch-original.js original-app
 
+      - name: Add unified board studio
+        run: node tranthag-original-patch/add-board-studio.js original-app
+
       - name: Prepare package for EXE
         run: node tranthag-original-patch/prepare-package.js original-app/package.json
 
