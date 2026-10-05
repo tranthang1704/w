@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RCKZ × ANBEO Auction</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:transparent;color:#fff;font-family:Segoe UI,Arial,sans-serif}
+body{padding:20px}.card{max-width:900px;margin:auto;background:rgba(12,12,18,.95);border:1px solid #292936;border-radius:20px;padding:22px}
+.head{display:flex;justify-content:space-between;align-items:center}.brand{font-size:25px;font-weight:900}.badge{font-size:12px;background:#1f2937;color:#86efac;padding:8px 10px;border-radius:99px}
+.phase{margin-top:22px;color:#ffd54a;font-weight:900;letter-spacing:1px}.timer{font-size:74px;font-weight:1000}.leader{font-size:30px;font-weight:900;margin-top:20px}.muted{color:#9ca3af}.row{display:grid;grid-template-columns:45px 1fr auto;border-top:1px solid #282833;padding:12px 0}.coins{color:#ffd54a;font-weight:900}
+</style>
+</head>
+<body>
+<div class="card">
+<div class="head"><div class="brand">RCKZ × ANBEO</div><div class="badge" id="live">OFFLINE</div></div>
+<div class="phase" id="phase">WAITING_LIVE</div>
+<div class="timer" id="timer">00:00</div>
+<div class="muted" id="round">Round: -</div>
+<div class="leader" id="leader">Chưa có top bidder</div>
+<div class="muted" id="leaderCoins">0 xu</div>
+<div id="ranking"></div>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket=io();
+const $=id=>document.getElementById(id);
+function fmt(s){s=Math.max(0,Number(s||0));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+socket.on("auction:state",s=>{
+  $("phase").textContent=s.phase;
+  $("timer").textContent=fmt(s.secondsLeft);
+  $("round").textContent="Round: "+(s.roundId||"-");
+  $("live").textContent=s.tiktok?.connected?"LIVE CONNECTED":"LIVE OFFLINE";
+  const top=s.bids?.[0];
+  $("leader").textContent=top?.username||"Chưa có top bidder";
+  $("leaderCoins").textContent=(top?.totalCoins||0)+" xu";
+  $("ranking").innerHTML=(s.bids||[]).slice(0,10).map((b,i)=>'<div class="row"><b>#'+(i+1)+'</b><span>'+b.username+'</span><span class="coins">'+b.totalCoins+' xu</span></div>').join("");
+});
+</script>
+</body>
+</html>
