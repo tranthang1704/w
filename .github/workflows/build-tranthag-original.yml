@@ -58,6 +58,9 @@ jobs:
       - name: Add safe test delivery mode
         run: node tranthag-original-patch/add-safe-test-delivery.js original-app
 
+      - name: Add TEST bidder panel to auction board
+        run: node tranthag-original-patch/add-test-bidder-board.js original-app
+
       - name: Prepare package for EXE
         run: node tranthag-original-patch/prepare-package.js original-app/package.json
 
