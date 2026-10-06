@@ -1,0 +1,22 @@
+{
+  "tiktokUsername": "your_streamer_username",
+  "auction": {
+    "mainRoundDuration": 50,
+    "finalRoundDuration": 25,
+    "minCoinThreshold": 100
+  },
+  "subAccounts": [
+    { "username": "tiktok_sub_01", "robloxUsername": "RobloxPlayer_01" },
+    { "username": "tiktok_sub_02", "robloxUsername": "RobloxGamer_02" },
+    { "username": "tiktok_sub_03", "robloxUsername": "RobloxPro_03" },
+    { "username": "tiktok_sub_04", "robloxUsername": "RobloxLegend_04" }
+  ],
+  "robloxAwardsMapping": {
+    "version": "auction-awards-v1",
+    "tiers": [
+      { "minCoins": 100, "maxCoins": 500, "itemCode": "PET_RARE_BOX", "name": "Hộp Pet Rare" },
+      { "minCoins": 501, "maxCoins": 2000, "itemCode": "PET_EPIC_EGG", "name": "Trứng Pet Epic" },
+      { "minCoins": 2001, "maxCoins": 99999, "itemCode": "PET_LEGENDARY_DRAGON", "name": "Rồng Thần Legendary" }
+    ]
+  }
+}
